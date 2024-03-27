@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class Image
+public class RayTracer
 {   
     public static RayHit IntersectGroundPlane(Ray ray, RayHit closestHit)
     {
