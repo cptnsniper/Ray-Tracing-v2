@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,34 +17,28 @@ public class Image
             
             closestHit.mat = new Material(new Vector3(0.8, 0.8, 0.8), 1, 0, new Vector3(1, 1, 1));
             
-            // Checkerboard
-            // Material white = new Material(new Vector3(0.8, 0.8, 0.8), 0.7, 0.2, new Vector3(1, 1, 1));
-            // Material black = new Material(new Vector3(0.2, 0.2, 0.2), 0.7, 0.2, new Vector3(1, 1, 1));
-            // if (Math.round(Math.abs(closestHit.pos.x)) % 2 == 0)
-            // {
-                // if (Math.round(Math.abs(closestHit.pos.z)) % 2 == 0)
-                // {
-                    // closestHit.mat = black;
-                // }
-                // else
-                // {
-                    // closestHit.mat = white;
-                // }
-            // }
-            // else
-            // {
-                // if (Math.round(Math.abs(closestHit.pos.z)) % 2 == 1)
-                // {
-                    // closestHit.mat = black;
-                // }
-                // else
-                // {
-                    // closestHit.mat = white;
-                // }
-            // }
+            // CheckerBoard
+            // closestHit.mat = checkerBoard(closestHit.pos)
+
             return closestHit;
         }
         return closestHit;
+    }
+
+    public static Material checkerBoard(Vector3 hit)
+    {
+        Material white = new Material(new Vector3(0.8, 0.8, 0.8), 0.7, 0.2, new Vector3(1, 1, 1));
+        Material black = new Material(new Vector3(0.2, 0.2, 0.2), 0.7, 0.2, new Vector3(1, 1, 1));
+        if (Math.round(Math.abs(hit.x)) % 2 == 0)
+        {
+            if (Math.round(Math.abs(hit.z)) % 2 == 0) return black;
+            else return white;
+        }
+        else
+        {
+            if (Math.round(Math.abs(hit.z)) % 2 == 1) return black;
+            else return white;
+        }
     }
     
     public static RayHit IntersectSphere(Ray ray, RayHit closestHit, Sphere sphere)
@@ -298,7 +291,6 @@ public class Image
         for (int s = 0; s < samples; s++)
         {            
             BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            // BufferedImage toneMappedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
@@ -317,31 +309,16 @@ public class Image
                     }
                     
                     double weight = 1 / (double)(s + 1);
-                    // Color oldPixel = new Color(oldImg.getRGB(j, i));
-                    // Vector3 oldResult = new Vector3(oldPixel.getRed(), oldPixel.getGreen(), oldPixel.getBlue());
                     Vector3 average = pixelArray[i * height + j].mul(1 - weight).add(ray.carriedLight.mul(weight));
                     pixelArray[i * height + j] = average;
                     average = average.mul(255);
                     average = new Vector3(Clamp(average.x, 0, 255), Clamp(average.y, 0, 255), Clamp(average.z, 0, 255));
-                    Vector3 color = average;
                     int pixel = Color(average);
                     img.setRGB(j, i, pixel);
-                    
-                    // Tone Mapping
-                    // color = color.div(4);
-                    // double white = 2;
-                    // double exposure = 10;
-                    // color = color.mul(white * exposure);
-                    // color = Vector3.div(Vector3.mul(color, new Vector3(1, 1, 1).add(color.div(white / white))), (new Vector3(1, 1, 1).add(color)));
-                    // color =  new Vector3(Clamp(color.x, 0, 255), Clamp(color.y, 0, 255), Clamp(color.z, 0, 255));
-                    // pixel = Color(color);
-                    // toneMappedImg.setRGB(j, i, pixel);
                 }
             }
 
             // Save as PNG
-            // File file = new File("image\\image.png");
-            // ImageIO.write(toneMappedImg, "png", file); 
             File file = new File("image\\Render Result [" + s + "].png");
             ImageIO.write(img, "png", file);
             
