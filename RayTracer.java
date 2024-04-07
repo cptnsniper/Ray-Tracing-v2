@@ -2,33 +2,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import com.aparapi.Kernel;
 
 public class RayTracer extends RayMath
 {   
-    public class RayTracingKernel extends Kernel {
-        private final int[] pixelArray;
-        private final int width;
-        private final int height;
-
-        public RayTracingKernel(int[] pixelArray, int width, int height) {
-            this.pixelArray = pixelArray;
-            this.width = width;
-            this.height = height;
-        }
-
-        @Override
-        public void run() {
-            int gid = getGlobalId();
-            int x = gid % width;
-            int y = gid / width;
-
-            // Cast a ray into the scene and calculate the color of the pixel
-            // This is where you would put your ray tracing code
-            // pixelArray[gid] = castRay(x, y);
-        }
-    }
-
     static int width = 1000;
     static int height = 1000;
     

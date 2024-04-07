@@ -1,5 +1,5 @@
 {
     "java.project.referencedLibraries": [
-        "lib/aparapi.jar"
-    ]
+        "lib/**/*.jar"
+    ]    
 }
