@@ -24,6 +24,15 @@ public class KernalLauncher {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         final int[] pixelData = new int[width * height];
 
+        System.out.println("Rendering... (" + width + "px, " + height + "px)\n");
+        String art = 
+                "               O  o\n" + 
+                "          _\\_   o\n" +
+                "       \\\\/  o\\ .    this might take a while...\n" + 
+                "       //\\___=\n" + 
+                "          ''\n";
+        System.out.println(art);
+
         // Obtain the number of platforms
         int numPlatformsArray[] = new int[1];
         CL.clGetPlatformIDs(0, null, numPlatformsArray);
@@ -52,7 +61,6 @@ public class KernalLauncher {
 
         // Read the program source code and compile it
         String programSource = readFile("rayTracer.cl");
-        System.out.println("Program Source: \n" + programSource);
         cl_program program = CL.clCreateProgramWithSource(context, 1, new String[]{ programSource }, null, null);
         CL.clBuildProgram(program, 0, null, null, null, null);
 
