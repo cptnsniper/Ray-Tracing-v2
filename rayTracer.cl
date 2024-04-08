@@ -64,7 +64,7 @@ Sphere createSphere(float3 pos, float radius, Material mat) {
     return sphere;
 }
 
-void IntersectGroundPlane(Ray ray, RayHit *closestHit) {
+void intersectGroundPlane(Ray ray, RayHit *closestHit) {
     // Calculate intersection distance along the ray with the ground plane (y = 0)
     float t = -ray.pos.y / ray.dir.y;
     if (t > 0 && t < closestHit->dist) {
@@ -72,7 +72,7 @@ void IntersectGroundPlane(Ray ray, RayHit *closestHit) {
         closestHit->pos = ray.pos + ray.dir * t;
         closestHit->normal = (float3)(0.0f, 1.0f, 0.0f);
         // Create and assign a new material
-        closestHit->mat = createMaterial((float3)(0.0f, 1.0f, 0.0f));
+        closestHit->mat = createMaterial((float3)(0.7f, 0.7f, 0.7f));
     }
 }
 
@@ -94,10 +94,27 @@ void intersectSphere(Ray ray, RayHit *closestHit, Sphere sphere) {
 RayHit trace(Ray ray) {
     RayHit closestHit = createRayHit((float3)(0.0f, 0.0f, 0.0f), FLT_MAX, (float3)(0.0f, 0.0f, 0.0f), createMaterial((float3)(0.0f, 0.0f, 0.0f)));
     
-    IntersectGroundPlane(ray, &closestHit);
-    intersectSphere(ray, &closestHit, createSphere((float3)(0.0f, 4.0f, 5.0f), 0.5f, createMaterial((float3)(1.0f, 0.0f, 0.0f))));
+    intersectGroundPlane(ray, &closestHit);
+
+    float3 color1 = (float3)(121, 224, 238) / 255;
+    float3 color2 = (float3)(152, 238, 204) / 255;
+    float3 color3 = (float3)(208, 245, 190) / 255;
+    float3 color4 = (float3)(251, 255, 220) / 255;
+    
+    intersectSphere(ray, &closestHit, createSphere((float3)(0, 3, 7), 3, createMaterial(color1)));
+    intersectSphere(ray, &closestHit, createSphere((float3)(-2.5, 1, 3.5), 1, createMaterial(color2)));
+    intersectSphere(ray, &closestHit, createSphere((float3)(3, 1.5, 3), 1.5, createMaterial(color3)));
+    intersectSphere(ray, &closestHit, createSphere((float3)(10, 4, 10), 4, createMaterial(color4)));
+    intersectSphere(ray, &closestHit, createSphere((float3)(-7, 2, 6), 2, createMaterial(color1)));
+    intersectSphere(ray, &closestHit, createSphere((float3)(-6.5, 1.5, 12), 1.5, createMaterial(color2)));
     
     return closestHit;
+}
+
+float3 reflect(float3 dir, float3 normal)
+{
+    // r = d − 2(d⋅n)n
+    return dir - normal * 2 * dot(dir, normal);
 }
 
 void shineRay(Ray *ray, RayHit hit) {
@@ -110,31 +127,29 @@ void shineRay(Ray *ray, RayHit hit) {
 
     if (hit.dist < FLT_MAX) {
         // Offset to correct for precision issues
-        // ray.pos = hit.pos + hit.normal * 0.001f;
+        ray->pos = hit.pos + hit.normal * 0.001f;
         
         // // Specularity and reflection calculations
         // bool isSpecular = (frand() <= hit.mat.clearCoat); // frand() needs to be defined or replaced with an appropriate RNG function
         
-        // float3 reflectedRay = Reflect(ray.dir, hit.normal);
+        float3 reflectedRay = reflect(ray->dir, hit.normal);
+        ray->dir = reflectedRay;
         // float3 randomRay = normalize(hit.normal + RandomOnSphere());
         // float3 diffuseRay = Slerp(reflectedRay, randomRay, hit.mat.roughness);
 
         // ray.dir = isSpecular ? reflectedRay : diffuseRay;
         // float3 reflectColor = isSpecular ? hit.mat.specular : hit.mat.diffuse;
         
-        // ray.energy = ray.energy * reflectColor;
-
-        ray->energy = (float3)(0.0f, 0.0f, 0.0f);
-        ray->carriedLight = hit.mat.diffuse;
+        ray->energy = ray->energy * hit.mat.diffuse;
 
     } else {
         // Sky and sun handling
-        float3 sunDirection = normalize((float3)(-1.0f, 1.0f, 1.0f));
-        if (length(ray->dir - sunDirection) < 0.2f) {
-            ray->carriedLight = (float3)(1.0f, 0.84f, 0.67f) * 20.0f;
-            ray->energy = (float3)(0.0f, 0.0f, 0.0f);
-            return;
-        }
+        // float3 sunDirection = normalize((float3)(-1.0f, 1.0f, 1.0f));
+        // if (length(ray->dir - sunDirection) < 0.2f) {
+        //     ray->carriedLight = (float3)(1.0f, 0.84f, 0.67f) * 20.0f;
+        //     ray->energy = (float3)(0.0f, 0.0f, 0.0f);
+        //     return;
+        // }
 
         float weight = ray->dir.y / 2.0f + 0.5f;
         float3 bottomColor = (float3)(1.0f, 1.0f, 1.0f);
@@ -146,6 +161,7 @@ void shineRay(Ray *ray, RayHit hit) {
 
 Ray createCameraRay(float3 cameraPos, float2 uv, float fov, float aperture, float focalLength) {
     Ray ray;
+    ray.energy = (float3)(1.0f, 1.0f, 1.0f);
 
     // Generate aperture offset
     float2 randomOnCircle = (float2)(0.0f, 0.0f); // RandomOnCircle() needs to be defined or replaced with an appropriate RNG function
@@ -164,6 +180,9 @@ inline int float3_color(float3 color) {
     int ir = (int)(color.x * 255.0f);
     int ig = (int)(color.y * 255.0f);
     int ib = (int)(color.z * 255.0f);
+    ir = clamp(ir, 0, 255);
+    ig = clamp(ig, 0, 255);
+    ib = clamp(ib, 0, 255);
     // Combine the components into a single int color in ARGB format
     int colorInt = (255 << 24) | (ir << 16) | (ig << 8) | ib;
 
@@ -179,22 +198,21 @@ __kernel void rayTracer(__global int* pixelData, const int width, const int heig
     float u = (float)i / height * 2.0f - 1.0f;
     float v = (float)j / width * 2.0f - 1.0f;
     u *= width / height;
-    v = 1.0f - v;
+    v = -v;
 
     static float3 camera = (float3)(0.0f, 3.0f, 0.0f);
     static double fov = 1;
     static double aperture = 0.6;
-    static double focalLength = 1;
+    static double focalLength = 6;
 
-    // Ray ray = createCameraRay(camera,  (float2)(u, v), fov, aperture, focalLength);
-    Ray ray = createRay(camera, (float3)(u, v, 1.0f), (float3)(1.0f, 1.0f, 1.0f), (float3)(0.0f, 0.0f, 0.0f));
-    // for (int r = 0; r < reflectionLimit; r++)
-    // {
+    Ray ray = createCameraRay(camera,  (float2)(u, v), fov, aperture, focalLength);
+    for (int r = 0; r < reflectionLimit; r++)
+    {
         RayHit hit = trace(ray);
         shineRay(&ray, hit);
-    //     if (length(ray.energy) <= 0.001) break;                   
-    // }
+        if (length(ray.energy) <= 0.001) break;                   
+    }
     
     int pixel = float3_color(ray.carriedLight);
-    pixelData[j * width + i] = float3_color(pixel);
+    pixelData[j * width + i] = pixel;
 }
