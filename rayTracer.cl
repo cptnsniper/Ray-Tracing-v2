@@ -282,6 +282,7 @@ Ray createCameraRay(float3 cameraPos, float2 uv, float fov, float aperture, floa
 
     // Generate aperture offset
     float2 rand = randomOnCircle(seed);
+    // float2 rand = (float2)(0,0);
     float3 rayPos = (float3)(rand.x * aperture, rand.y * aperture, 0.0f);
 
     // Set ray position and direction
