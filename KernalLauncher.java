@@ -19,8 +19,8 @@ public class KernalLauncher {
 
     public static void main(String[] args) throws IOException {
         CL.setExceptionsEnabled(true);
-        final int width = 800;
-        final int height = 800;
+        final int width = 400;
+        final int height = 400;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         final int[] pixelData = new int[width * height];
 

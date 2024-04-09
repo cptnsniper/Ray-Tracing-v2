@@ -114,10 +114,12 @@ float2 randomOnCircle(uint seed)
     return pointOnCircle * sqrt(random(seed + 398732));
 }
 
-float3 reflect(float3 dir, float3 normal)
-{
-    // r = d − 2(d⋅n)n
-    return dir - normal * 2 * dot(dir, normal);
+float3 reflect(float3 dir, float3 normal) {
+    normal = normalize(normal); // Ensure the normal is normalized
+    dir = normalize(dir); // Normalize the incoming direction
+    float NdotV = dot(dir, normal);
+    // r = d - 2*(d⋅n)*n
+    return dir - normal * 2 * NdotV;
 }
 
 float3 slerp(float3 startDir, float3 endDir, float t) {
