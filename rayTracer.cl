@@ -153,7 +153,7 @@ void intersectGroundPlane(Ray ray, RayHit *closestHit) {
         closestHit->pos = ray.pos + ray.dir * t;
         closestHit->normal = (float3)(0.0f, 1.0f, 0.0f);
         // Create and assign a new material
-        closestHit->mat = createMaterial((float3)(0.7f, 0.7f, 0.7f), 0.7, 0.2, (float3)(0.8f, 0.8f, 0.8f));
+        closestHit->mat = createMaterial((float3)(0.8f, 0.8f, 0.8f), 1, 0, (float3)(0.8f, 0.8f, 0.8f));
     }
 }
 
@@ -226,12 +226,12 @@ RayHit trace(Ray ray) {
     float3 color3 = (float3)(208, 245, 190) / 255;
     float3 color4 = (float3)(251, 255, 220) / 255;
     
-    intersectSphere(ray, &closestHit, createSphere((float3)(0, 3, 7), 3, createMaterial(color1, 1, 0, (float3)(1, 1, 1))));
-    intersectSphere(ray, &closestHit, createSphere((float3)(-2.5, 1, 3.5), 1, createMaterial(color2, 1, 0, (float3)(1, 1, 1))));
-    intersectSphere(ray, &closestHit, createSphere((float3)(3, 1.5, 3), 1.5, createMaterial(color3, 1, 0, (float3)(1, 1, 1))));
-    intersectSphere(ray, &closestHit, createSphere((float3)(10, 4, 10), 4, createMaterial(color4, 1, 0, (float3)(1, 1, 1))));
-    intersectSphere(ray, &closestHit, createSphere((float3)(-7, 2, 6), 2, createMaterial(color1, 1, 0, (float3)(1, 1, 1))));
-    intersectSphere(ray, &closestHit, createSphere((float3)(-6.5, 1.5, 12), 1.5, createMaterial(color2, 1, 0, (float3)(1, 1, 1))));
+    intersectSphere(ray, &closestHit, createSphere((float3)(0, 3, 7), 3, createMaterial(color1, 1, 0.2, (float3)(1, 1, 1))));
+    intersectSphere(ray, &closestHit, createSphere((float3)(-2.5, 1, 3.5), 1, createMaterial(color2, 1, 0.2, (float3)(1, 1, 1))));
+    intersectSphere(ray, &closestHit, createSphere((float3)(3, 1.5, 3), 1.5, createMaterial(color3, 1, 0.2, (float3)(1, 1, 1))));
+    intersectSphere(ray, &closestHit, createSphere((float3)(10, 4, 10), 4, createMaterial(color4, 1, 0.2, (float3)(1, 1, 1))));
+    intersectSphere(ray, &closestHit, createSphere((float3)(-7, 2, 6), 2, createMaterial(color1, 1, 0.2, (float3)(1, 1, 1))));
+    intersectSphere(ray, &closestHit, createSphere((float3)(-6.5, 1.5, 12), 1.5, createMaterial(color2, 1, 0.2, (float3)(1, 1, 1))));
     
     return closestHit;
 }
@@ -321,10 +321,10 @@ __kernel void rayTracer(__global int* pixelData, const int width, const int heig
     u *= width / height;
     v = -v;
 
-    static float3 camera = (float3)(0.0f, 3.0f, 0.0f);
-    static float fov = 1;
-    static float aperture = 0;
-    static float focalLength = 6;
+    float3 camera = (float3)(0.0f, 3.0f, 0.0f);
+    float fov = 1;
+    float aperture = 0.3;
+    float focalLength = 6;
 
     float3 light = (float3)(0.0f, 0.0f, 0.0f);
 
