@@ -8,10 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import static org.jocl.CL.*;
 
-// javac -classpath ".;lib\jocl-2.0.5.jar" KernalLauncher.java
-// java -classpath ".;lib\jocl-2.0.5.jar" KernalLauncher
+// javac -classpath ".;lib\jocl-2.0.5.jar" KernelLauncher.java
+// java -classpath ".;lib\jocl-2.0.5.jar" KernelLauncher
 
-public class KernalLauncher {
+public class KernelLauncher {
     private static String readFile(String fileName) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(fileName));
         return new String(encoded, StandardCharsets.UTF_8);
